@@ -1,9 +1,10 @@
-import { Body, ConflictException, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
+import { UserRegister } from './interfaces/user-register/user-register.interface';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Token } from '../auth/dto/token.dto';
 
 @Injectable()
 export class UserService {
@@ -12,30 +13,16 @@ export class UserService {
     private readonly authService: AuthService,
   ) {}
 
-  async registerUser(createUserDto: CreateUserDto): Promise<User> {
-    const isEmailExist = await this.checkEmailExists(createUserDto.email);
-    if (isEmailExist) {
-      throw new ConflictException(
-        'Ya hay una registrada con el email, pruebe con otro',
+  async registerUser<T>(
+    information: T,
+    userRegister: UserRegister<T>,
+  ): Promise<Token> {
+    const user = await userRegister.registerUser(information);
+    if (!user)
+      throw new InternalServerErrorException(
+        'No se puedo registrar el ususario',
       );
-    }
-
-    const hashedPassword = await this.authService.excriptPassword(
-      createUserDto.password,
-    );
-
-    return this.userModel.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-  }
-
-  async checkEmailExists(email: string): Promise<boolean> {
-    const validate = await this.userModel
-      .exists({
-        email: email,
-      })
-      .exec();
-    return !!validate;
+    const token = this.authService.generateToken(user);
+    return token;
   }
 }

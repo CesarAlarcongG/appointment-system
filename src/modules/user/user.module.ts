@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { AuthModule } from '../auth/auth.module';
+import { TraditionalRegisterService } from './interfaces/user-register/implements/traditional-register.implement';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { AuthModule } from '../auth/auth.module';
     AuthModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, TraditionalRegisterService],
 })
 export class UserModule {}
