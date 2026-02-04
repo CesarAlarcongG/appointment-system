@@ -1,7 +1,42 @@
-import { Controller } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import {
+  Controller,
+  Get,
+  Req,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
+import { GoogleAuthGuard } from './guards/google.guard';
+import { GoogleRegisterService } from './services/google.service';
+import { UserService } from '../user/user.service';
+import { Token } from './dto/token.dto';
+import type { GooglePayload } from './interfaces/payload.google';
+import type { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly googleRegisterService: GoogleRegisterService,
+  ) {}
+
+  @Get('register-google')
+  @UseGuards(GoogleAuthGuard)
+  googleAuth(): void {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuthRedirect(@Req() request: Request): Promise<Token> {
+    if (!request.user) {
+      throw new UnauthorizedException(
+        'La autenticación con Google falló o el usuario no existe',
+      );
+    }
+
+    const googleUser: GooglePayload = request.user as GooglePayload;
+
+    return await this.userService.registerUser<GooglePayload>(
+      googleUser,
+      this.googleRegisterService,
+    );
+  }
 }

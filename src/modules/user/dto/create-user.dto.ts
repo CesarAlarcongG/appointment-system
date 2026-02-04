@@ -1,24 +1,29 @@
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ERolUser } from 'src/modules/user/enums/rol.enum';
 
 export class CreateUserDto {
   @IsString()
-  name: string;
+  firstName: string;
 
   @IsString()
   lastName: string;
 
   @IsString()
-  phoneNumber: number;
+  @IsOptional()
+  phoneNumber?: number;
+
   @IsString()
   email: string;
 
   @IsString()
-  password: string;
+  @IsOptional()
+  password?: string;
 
   @IsEnum(ERolUser)
-  role: ERolUser;
+  @IsOptional()
+  role?: ERolUser;
 
   @IsString()
-  gender: string;
+  @IsOptional()
+  gender?: string;
 }

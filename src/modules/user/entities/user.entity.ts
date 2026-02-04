@@ -5,21 +5,27 @@ import { HydratedDocument } from 'mongoose';
 @Schema()
 export class User {
   @Prop()
-  name: string;
+  firtsName: string;
+
   @Prop()
   lastName: string;
+
   @Prop()
   phoneNumber: number;
+
   @Prop({ unique: true })
   email: string;
-  @Prop()
+
+  @Prop({ required: false })
   password: string;
+
   @Prop({
     type: String,
     enum: Object.values(ERolUser),
-    required: true,
+    required: false,
   })
-  role: ERolUser;
+  rol: ERolUser;
+
   @Prop()
   gender: string;
 }

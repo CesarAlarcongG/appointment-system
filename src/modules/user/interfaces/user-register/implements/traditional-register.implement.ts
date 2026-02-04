@@ -2,9 +2,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { User } from 'src/modules/user/entities/user.entity';
-import { UserRegister } from '../user-register.interface';
+import { UserRegister } from '../../../../../interfaces/user-register.interface';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 
 @Injectable()
 export class TraditionalRegisterService implements UserRegister<CreateUserDto> {
@@ -16,6 +20,9 @@ export class TraditionalRegisterService implements UserRegister<CreateUserDto> {
   async registerUser(dto: CreateUserDto): Promise<User> {
     const exists = await this.userModel.exists({ email: dto.email });
     if (exists) throw new ConflictException('Email ya registrado');
+
+    if (!dto.password)
+      throw new BadRequestException('No se envió la contraseña');
 
     const hashedPassword = await this.authService.encripPassword(dto.password);
 

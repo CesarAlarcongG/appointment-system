@@ -2,7 +2,7 @@ import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
-import { UserRegister } from './interfaces/user-register/user-register.interface';
+import { UserRegister } from '../../interfaces/user-register.interface';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Token } from '../auth/dto/token.dto';
 
