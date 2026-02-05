@@ -3,4 +3,5 @@ export interface GooglePayload {
   lastName: string;
   email: string;
   accessToken: string;
+  refreshToken: string;
 }

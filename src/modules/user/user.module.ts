@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
 import { AuthModule } from '../auth/auth.module';
-import { TraditionalRegisterService } from './interfaces/user-register/implements/traditional-register.implement';
+import { TraditionalRegisterService } from './services/traditional-register.service';
 
 @Module({
   imports: [

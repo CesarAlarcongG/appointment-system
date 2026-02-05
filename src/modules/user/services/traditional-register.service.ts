@@ -2,13 +2,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthService } from 'src/modules/auth/auth.service';
 import { User } from 'src/modules/user/entities/user.entity';
-import { UserRegister } from '../../../../../interfaces/user-register.interface';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
 } from '@nestjs/common';
+import { UserRegister } from 'src/interfaces/user-register.interface';
 
 @Injectable()
 export class TraditionalRegisterService implements UserRegister<CreateUserDto> {

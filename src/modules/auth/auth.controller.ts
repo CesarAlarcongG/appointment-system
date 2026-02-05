@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -11,15 +13,18 @@ import { UserService } from '../user/user.service';
 import { Token } from './dto/token.dto';
 import type { GooglePayload } from './interfaces/payload.google';
 import type { Request } from 'express';
+import { CredentialsDto } from './dto/credentials.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
   constructor(
+    private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly googleRegisterService: GoogleRegisterService,
   ) {}
 
-  @Get('register-google')
+  @Get('google')
   @UseGuards(GoogleAuthGuard)
   googleAuth(): void {}
 
@@ -38,5 +43,10 @@ export class AuthController {
       googleUser,
       this.googleRegisterService,
     );
+  }
+
+  @Post('login')
+  async userLogin(@Body() credentials: CredentialsDto): Promise<Token> {
+    return await this.authService.login(credentials);
   }
 }

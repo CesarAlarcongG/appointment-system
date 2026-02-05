@@ -38,7 +38,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       firtsName,
       lastName,
       email,
+      //Ojo que con esto puedes enviar correos, revisar el calendario, etc. >:]
+      // Solo dura 1h así que debes usar el refreshtoken
       accessToken,
+      refreshToken,
     };
 
     done(null, user);
