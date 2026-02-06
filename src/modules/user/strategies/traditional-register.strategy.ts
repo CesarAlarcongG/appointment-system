@@ -8,14 +8,16 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { UserRegister } from 'src/interfaces/user-register.interface';
+import { UserRegisterStrategy } from '../interfaces/user-register-strategy.interface';
 
 @Injectable()
-export class TraditionalRegisterService implements UserRegister<CreateUserDto> {
+export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateUserDto> {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly authService: AuthService,
   ) {}
+
+  provider = 'traditional';
 
   async registerUser(dto: CreateUserDto): Promise<User> {
     const exists = await this.userModel.exists({ email: dto.email });
@@ -24,7 +26,7 @@ export class TraditionalRegisterService implements UserRegister<CreateUserDto> {
     if (!dto.password)
       throw new BadRequestException('No se envió la contraseña');
 
-    const hashedPassword = await this.authService.encripPassword(dto.password);
+    const hashedPassword = await this.authService.encriptPassword(dto.password);
 
     return this.userModel.create({
       ...dto,

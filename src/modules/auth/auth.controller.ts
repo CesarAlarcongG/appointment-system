@@ -8,21 +8,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { GoogleAuthGuard } from './guards/google.guard';
-import { GoogleRegisterService } from './services/google.service';
-import { UserService } from '../user/user.service';
 import { Token } from './dto/token.dto';
-import type { GooglePayload } from './interfaces/payload.google';
-import type { Request } from 'express';
 import { CredentialsDto } from './dto/credentials.dto';
 import { AuthService } from './auth.service';
+import { GooglePayload } from '../user/types/google.payload';
+import type { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-    private readonly googleRegisterService: GoogleRegisterService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
@@ -39,14 +33,11 @@ export class AuthController {
 
     const googleUser: GooglePayload = request.user as GooglePayload;
 
-    return await this.userService.registerUser<GooglePayload>(
-      googleUser,
-      this.googleRegisterService,
-    );
+    return this.authService.validateGoogleAccount(googleUser);
   }
 
   @Post('login')
   async userLogin(@Body() credentials: CredentialsDto): Promise<Token> {
-    return await this.authService.login(credentials);
+    return await this.authService.validateCredencial(credentials);
   }
 }

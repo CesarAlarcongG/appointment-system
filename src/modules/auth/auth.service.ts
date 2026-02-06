@@ -1,21 +1,27 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/payload.jwt';
 import { User } from '../user/entities/user.entity';
 import { Token } from './dto/token.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { CredentialsDto } from './dto/credentials.dto';
+import { UserService } from '../user/user.service';
+import { GooglePayload } from '../user/types/google.payload';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
     private readonly jwtServce: JwtService,
   ) {}
 
-  async encripPassword(password: string): Promise<string> {
+  async encriptPassword(password: string): Promise<string> {
     return hash(password, 10);
   }
 
@@ -28,25 +34,17 @@ export class AuthService {
     return token;
   }
 
-  async login({ email, password }: CredentialsDto): Promise<Token> {
-    const user: User = await this.findUserByEmail(email);
+  async validateCredencial({
+    email,
+    password,
+  }: CredentialsDto): Promise<Token> {
+    const user: User | null = await this.userService.findUserByEmail(email);
+
+    if (!user) throw new UnauthorizedException('Credenciales inválidas');
 
     await this.validatePassword(password, user.password);
 
     return this.generateToken(user);
-  }
-
-  async findUserByEmail(email: string): Promise<User> {
-    const user: User | null = await this.userModel.findOne({
-      email: email,
-    });
-
-    if (!user) {
-      throw new UnauthorizedException(
-        'No hay una cuenta registrada con este email',
-      );
-    }
-    return user;
   }
 
   async validatePassword(
@@ -55,5 +53,9 @@ export class AuthService {
   ): Promise<void> {
     const validate: boolean = await compare(passwordCredencial, passwordDb);
     if (!validate) throw new UnauthorizedException('Credenciales invalidas');
+  }
+
+  async validateGoogleAccount(googlePayload: GooglePayload): Promise<Token> {
+    return this.userService.registerUser(googlePayload, 'google');
   }
 }
