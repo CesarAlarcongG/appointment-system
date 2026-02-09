@@ -56,6 +56,11 @@ export class AuthService {
   }
 
   async validateGoogleAccount(googlePayload: GooglePayload): Promise<Token> {
+    const user: User | null = await this.userService.findUserByEmail(
+      googlePayload.email,
+    );
+    if (user) return this.generateToken(user);
+
     return this.userService.registerUser(googlePayload, 'google');
   }
 }
