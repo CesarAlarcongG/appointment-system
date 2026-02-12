@@ -6,6 +6,7 @@ import { Public } from 'src/decorators/public.decorator';
 import { UpdateDataDto } from './dto/update-data.dto';
 import { ExtractJwtPayload } from 'src/decorators/extract-jwt-payload.decorator';
 import type { JwtPayload } from '../auth/interfaces/payload.jwt';
+import { ERolUser } from './enums/rol.enum';
 
 @Controller('user')
 export class UserController {
@@ -26,6 +27,6 @@ export class UserController {
     @Body() data: UpdateDataDto,
     @ExtractJwtPayload() jwt: JwtPayload,
   ) {
-    return this.userService.updateBasicInformation(jwt, data);
+    return this.userService.updateUserData(jwt, data);
   }
 }

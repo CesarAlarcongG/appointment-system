@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ERolUser } from '../enums/rol.enum';
 import { HydratedDocument } from 'mongoose';
+import { EStateUser } from '../enums/state-account.enum';
 
 @Schema()
 export class User {
@@ -28,6 +29,9 @@ export class User {
 
   @Prop()
   gender: string;
+
+  @Prop()
+  state: EStateUser;
 }
 export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);

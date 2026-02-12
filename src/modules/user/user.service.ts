@@ -43,10 +43,7 @@ export class UserService {
     return await this.userModel.findOne({ email }).exec();
   }
 
-  async updateBasicInformation(
-    jwt: JwtPayload,
-    data: UpdateDataDto,
-  ): Promise<User> {
+  async updateUserData(jwt: JwtPayload, data: UpdateDataDto): Promise<User> {
     const userUpdate: User | null = await this.userModel
       .findOneAndUpdate(
         { _id: jwt._id },

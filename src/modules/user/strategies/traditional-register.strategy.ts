@@ -9,6 +9,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { UserRegisterStrategy } from '../interfaces/user-register-strategy.interface';
+import { EStateUser } from '../enums/state-account.enum';
 
 @Injectable()
 export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateUserDto> {
@@ -31,6 +32,7 @@ export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateU
     return this.userModel.create({
       ...dto,
       password: hashedPassword,
+      state: EStateUser.INFORMATION_INCOMPLETE,
     });
   }
 }

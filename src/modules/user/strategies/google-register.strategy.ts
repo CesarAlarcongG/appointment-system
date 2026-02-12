@@ -5,6 +5,8 @@ import { User, UserDocument } from 'src/modules/user/entities/user.entity';
 import { UserService } from 'src/modules/user/user.service';
 import { UserRegisterStrategy } from '../interfaces/user-register-strategy.interface';
 import { GooglePayload } from '../types/google.payload';
+import { EStateUser } from '../enums/state-account.enum';
+import { ERolUser } from '../enums/rol.enum';
 
 @Injectable()
 export class GoogleRegisterStrategy implements UserRegisterStrategy<GooglePayload> {
@@ -25,6 +27,8 @@ export class GoogleRegisterStrategy implements UserRegisterStrategy<GooglePayloa
       email: payload.email,
       firtsName: payload.firtsName,
       lastName: payload.lastName,
+      state: EStateUser.INFORMATION_INCOMPLETE,
+      rol: ERolUser.PATIENT,
     });
   }
 }
