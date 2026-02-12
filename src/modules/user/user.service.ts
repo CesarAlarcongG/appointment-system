@@ -7,10 +7,13 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Token } from '../auth/dto/token.dto';
 import { RegisterFactory } from './factories/register.factory';
 import { UserRegisterStrategy } from './interfaces/user-register-strategy.interface';
+import { UpdateDataDto } from './dto/update-data.dto';
+import { JwtPayload } from '../auth/interfaces/payload.jwt';
 
 @Injectable()
 export class UserService {
@@ -38,5 +41,25 @@ export class UserService {
 
   async findUserByEmail(email: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ email }).exec();
+  }
+
+  async updateBasicInformation(
+    jwt: JwtPayload,
+    data: UpdateDataDto,
+  ): Promise<User> {
+    const userUpdate: User | null = await this.userModel
+      .findOneAndUpdate(
+        { _id: jwt._id },
+        {
+          $set: {
+            ...data,
+          },
+        },
+        { new: true },
+      )
+      .exec();
+
+    if (!userUpdate) throw new NotFoundException('No se necontro al ususario');
+    return userUpdate;
   }
 }
