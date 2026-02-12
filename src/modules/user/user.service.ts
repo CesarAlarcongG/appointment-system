@@ -1,4 +1,4 @@
-import { User } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
@@ -25,7 +25,7 @@ export class UserService {
     const strategy: UserRegisterStrategy<T> =
       this.factoryRegister.get(provider);
 
-    const user: User = await strategy.registerUser(information);
+    const user: UserDocument = await strategy.registerUser(information);
     if (!user)
       throw new InternalServerErrorException(
         'No se puedo registrar el ususario',
@@ -36,7 +36,7 @@ export class UserService {
     return token;
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({ email }).exec();
   }
 }

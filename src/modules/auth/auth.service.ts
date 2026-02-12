@@ -7,7 +7,7 @@ import {
 import { hash, compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/payload.jwt';
-import { User } from '../user/entities/user.entity';
+import { UserDocument } from '../user/entities/user.entity';
 import { Token } from './dto/token.dto';
 import { CredentialsDto } from './dto/credentials.dto';
 import { UserService } from '../user/user.service';
@@ -18,19 +18,20 @@ export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
-    private readonly jwtServce: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async encriptPassword(password: string): Promise<string> {
     return hash(password, 10);
   }
 
-  generateToken({ email, rol }: User): Token {
+  generateToken({ _id, email, rol }: UserDocument): Token {
     const payload: JwtPayload = {
+      _id: _id.toString(),
       email,
       rol,
     };
-    const token: Token = { token: this.jwtServce.sign(payload) };
+    const token: Token = { token: this.jwtService.sign(payload) };
     return token;
   }
 
@@ -38,7 +39,8 @@ export class AuthService {
     email,
     password,
   }: CredentialsDto): Promise<Token> {
-    const user: User | null = await this.userService.findUserByEmail(email);
+    const user: UserDocument | null =
+      await this.userService.findUserByEmail(email);
 
     if (!user) throw new UnauthorizedException('Credenciales inválidas');
 
@@ -56,11 +58,28 @@ export class AuthService {
   }
 
   async validateGoogleAccount(googlePayload: GooglePayload): Promise<Token> {
-    const user: User | null = await this.userService.findUserByEmail(
+    const user: UserDocument | null = await this.userService.findUserByEmail(
       googlePayload.email,
     );
     if (user) return this.generateToken(user);
 
     return this.userService.registerUser(googlePayload, 'google');
+  }
+
+  getJwtPayload(jwt: string): JwtPayload {
+    try {
+      const token: string[] = jwt.split(' ');
+
+      const payload = this.jwtService.verify<JwtPayload>(token[1]);
+
+      return {
+        _id: payload._id,
+        email: payload.email,
+        rol: payload.rol,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new UnauthorizedException('Token inválido o expirado');
+    }
   }
 }

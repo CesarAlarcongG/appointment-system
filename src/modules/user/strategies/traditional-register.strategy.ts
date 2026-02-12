@@ -1,7 +1,7 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuthService } from 'src/modules/auth/auth.service';
-import { User } from 'src/modules/user/entities/user.entity';
+import { User, UserDocument } from 'src/modules/user/entities/user.entity';
 import { CreateUserDto } from 'src/modules/user/dto/create-user.dto';
 import {
   BadRequestException,
@@ -19,7 +19,7 @@ export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateU
 
   provider = 'traditional';
 
-  async registerUser(dto: CreateUserDto): Promise<User> {
+  async registerUser(dto: CreateUserDto): Promise<UserDocument> {
     const exists = await this.userModel.exists({ email: dto.email });
     if (exists) throw new ConflictException('Email ya registrado');
 

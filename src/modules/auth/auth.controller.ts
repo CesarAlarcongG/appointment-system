@@ -13,6 +13,7 @@ import { CredentialsDto } from './dto/credentials.dto';
 import { AuthService } from './auth.service';
 import { GooglePayload } from '../user/types/google.payload';
 import type { Request } from 'express';
+import { Public } from 'src/decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -20,10 +21,12 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(GoogleAuthGuard)
+  @Public()
   googleAuth(): void {}
 
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
+  @Public()
   async googleAuthRedirect(@Req() request: Request): Promise<Token> {
     if (!request.user) {
       throw new UnauthorizedException(
@@ -37,6 +40,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Public()
   async userLogin(@Body() credentials: CredentialsDto): Promise<Token> {
     return await this.authService.validateCredencial(credentials);
   }
