@@ -6,6 +6,7 @@ import { Public } from 'src/decorators/public.decorator';
 import { UpdateDataDto } from './dto/update-data.dto';
 import { ExtractJwtPayload } from 'src/decorators/extract-jwt-payload.decorator';
 import type { JwtPayload } from '../auth/interfaces/payload.jwt';
+import { RequiresRole } from 'src/decorators/requiere-rol/require-rol.decorator';
 import { ERolUser } from './enums/rol.enum';
 
 @Controller('user')
@@ -23,6 +24,7 @@ export class UserController {
 
   //Endpoints privados
   @Patch('update-data')
+  @RequiresRole(ERolUser.PATIENT, ERolUser.ADMIN)
   updateUserInformation(
     @Body() data: UpdateDataDto,
     @ExtractJwtPayload() jwt: JwtPayload,

@@ -21,11 +21,11 @@ export class User {
   password: string;
 
   @Prop({
-    type: String,
+    type: [String],
     enum: Object.values(ERolUser),
-    required: false,
+    required: true,
   })
-  rol: ERolUser;
+  rol: ERolUser[];
 
   @Prop()
   gender: string;

@@ -28,7 +28,7 @@ export class GoogleRegisterStrategy implements UserRegisterStrategy<GooglePayloa
       firtsName: payload.firtsName,
       lastName: payload.lastName,
       state: EStateUser.INFORMATION_INCOMPLETE,
-      rol: ERolUser.PATIENT,
+      rol: [ERolUser.PATIENT],
     });
   }
 }

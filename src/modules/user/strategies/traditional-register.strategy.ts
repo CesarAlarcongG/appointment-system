@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserRegisterStrategy } from '../interfaces/user-register-strategy.interface';
 import { EStateUser } from '../enums/state-account.enum';
+import { ERolUser } from '../enums/rol.enum';
 
 @Injectable()
 export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateUserDto> {
@@ -33,6 +34,7 @@ export class TraditionalRegisterStrategy implements UserRegisterStrategy<CreateU
       ...dto,
       password: hashedPassword,
       state: EStateUser.INFORMATION_INCOMPLETE,
+      rol: [ERolUser.PATIENT],
     });
   }
 }

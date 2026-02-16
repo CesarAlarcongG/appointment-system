@@ -16,6 +16,6 @@ export class RegisterFactory {
       throw new Error('Provider no soportado');
     }
 
-    return strategy as unknown as UserRegisterStrategy<T>;
+    return strategy as UserRegisterStrategy<T>;
   }
 }
