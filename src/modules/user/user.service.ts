@@ -1,5 +1,5 @@
 import { User, UserDocument } from './entities/user.entity';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
 import {
@@ -14,6 +14,7 @@ import { RegisterFactory } from './factories/register.factory';
 import { UserRegisterStrategy } from './interfaces/user-register-strategy.interface';
 import { UpdateDataDto } from './dto/update-data.dto';
 import { JwtPayload } from '../auth/interfaces/payload.jwt';
+import { EStateUser } from './enums/state-account.enum';
 
 @Injectable()
 export class UserService {
@@ -58,5 +59,18 @@ export class UserService {
 
     if (!userUpdate) throw new NotFoundException('No se necontro al ususario');
     return userUpdate;
+  }
+
+  async suspendUserAccount(idUser: ObjectId) {
+    const userSuspended = await this.userModel.findOneAndUpdate(
+      { _id: idUser },
+      {
+        state: EStateUser.SUSPENDED,
+      },
+    );
+
+    if (!userSuspended)
+      throw new NotFoundException('No se encontro al ususario');
+    return userSuspended;
   }
 }

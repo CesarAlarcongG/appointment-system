@@ -25,7 +25,7 @@ export class User {
     enum: Object.values(ERolUser),
     required: true,
   })
-  rol: ERolUser[];
+  roles: ERolUser[];
 
   @Prop()
   gender: string;

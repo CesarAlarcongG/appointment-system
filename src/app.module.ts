@@ -17,6 +17,7 @@ import { RoleGuard } from './guards/role/role.guard';
   ],
   controllers: [],
   providers: [
+    //El orden en como declaras los guards es el orden en el que se van a ejecutar
     {
       provide: APP_GUARD,
       useClass: JwtGuard,

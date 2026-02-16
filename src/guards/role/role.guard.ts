@@ -31,12 +31,10 @@ export class RoleGuard implements CanActivate {
     }
 
     const request: Request = context.switchToHttp().getRequest<Request>();
-    const token: string | undefined = this.extractTokenFromHeader(request);
+    const token: JwtPayload = request.user as JwtPayload;
     if (!token) throw new UnauthorizedException('No tiene token');
-    const tokenPayload: JwtPayload = this.jwtService.verify<JwtPayload>(token);
 
-    const roles: ERolUser[] = tokenPayload.rol;
-
+    const roles: ERolUser[] = token.rol;
     const hasRole: boolean = roles.some((rol) => rolRequire.includes(rol));
 
     if (!hasRole)
@@ -44,10 +42,5 @@ export class RoleGuard implements CanActivate {
         'No tiene los roles para ingresar a esta endpoint',
       );
     return true;
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }
