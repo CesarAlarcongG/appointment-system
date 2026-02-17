@@ -10,6 +10,7 @@ import { RequiresRole } from 'src/decorators/requiere-rol/require-rol.decorator'
 import { ERolUser } from './enums/rol.enum';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import type { ObjectId } from 'mongoose';
+import { ChangePassword } from './dto/change-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -38,5 +39,10 @@ export class UserController {
   @RequiresRole(ERolUser.ADMIN)
   bloackAccount(@Param('idUser', ParseObjectIdPipe) idUser: ObjectId) {
     return this.userService.suspendUserAccount(idUser);
+  }
+
+  @Patch('change-password')
+  changePassword(@Body() changePassword: ChangePassword) {
+    return this.userService.changePassword(changePassword);
   }
 }

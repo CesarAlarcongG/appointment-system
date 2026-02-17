@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Req,
   UnauthorizedException,
@@ -14,6 +15,7 @@ import { AuthService } from './auth.service';
 import { GooglePayload } from '../user/types/google.payload';
 import type { Request } from 'express';
 import { Public } from 'src/decorators/public.decorator';
+import { ForgotPassword } from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -43,5 +45,11 @@ export class AuthController {
   @Public()
   async userLogin(@Body() credentials: CredentialsDto): Promise<Token> {
     return await this.authService.validateCredencial(credentials);
+  }
+
+  @Patch('send-code')
+  @Public()
+  async sendCode(@Body() forgot: ForgotPassword) {
+    return this.authService.sendCode(forgot.email);
   }
 }

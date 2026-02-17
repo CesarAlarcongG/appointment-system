@@ -21,12 +21,11 @@ export class RoleGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const rolRequire: ERolUser[] = this.reflector.getAllAndOverride<ERolUser[]>(
-      'require-rol',
-      [context.getHandler(), context.getClass()],
-    );
+    const decoratorRoles: ERolUser[] = this.reflector.getAllAndOverride<
+      ERolUser[]
+    >('require-rol', [context.getHandler(), context.getClass()]);
 
-    if (!rolRequire) {
+    if (!decoratorRoles) {
       return true;
     }
 
@@ -35,7 +34,7 @@ export class RoleGuard implements CanActivate {
     if (!token) throw new UnauthorizedException('No tiene token');
 
     const roles: ERolUser[] = token.rol;
-    const hasRole: boolean = roles.some((rol) => rolRequire.includes(rol));
+    const hasRole: boolean = roles.some((rol) => decoratorRoles.includes(rol));
 
     if (!hasRole)
       throw new UnauthorizedException(

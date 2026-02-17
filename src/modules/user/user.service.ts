@@ -8,6 +8,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Token } from '../auth/dto/token.dto';
 import { RegisterFactory } from './factories/register.factory';
@@ -15,6 +16,7 @@ import { UserRegisterStrategy } from './interfaces/user-register-strategy.interf
 import { UpdateDataDto } from './dto/update-data.dto';
 import { JwtPayload } from '../auth/interfaces/payload.jwt';
 import { EStateUser } from './enums/state-account.enum';
+import { ChangePassword } from './dto/change-password.dto';
 
 @Injectable()
 export class UserService {
@@ -72,5 +74,34 @@ export class UserService {
     if (!userSuspended)
       throw new NotFoundException('No se encontro al ususario');
     return userSuspended;
+  }
+
+  async saveResetCode(userId: string, code: string): Promise<void> {
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { resetCode: code } },
+    );
+  }
+
+  async changePassword({
+    code,
+    newPassword,
+    email,
+  }: ChangePassword): Promise<void> {
+    const user: UserDocument | null = await this.findUserByEmail(email);
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    this.isValidCode(code, user.resetCode);
+    const newPasswordEncript = this.authService.encriptPassword(newPassword);
+    this.userModel.updateOne(
+      { _id: user._id },
+      { $set: { password: newPasswordEncript } },
+    );
+  }
+
+  isValidCode(code: string, resetCode: string): void {
+    if (code !== resetCode) {
+      throw new UnauthorizedException('El código es incorrecto');
+    }
   }
 }

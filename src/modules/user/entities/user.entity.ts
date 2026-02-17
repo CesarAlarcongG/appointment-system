@@ -25,13 +25,16 @@ export class User {
     enum: Object.values(ERolUser),
     required: true,
   })
-  roles: ERolUser[];
+  rol: ERolUser[];
 
   @Prop()
   gender: string;
 
   @Prop()
   state: EStateUser;
+
+  @Prop({ required: false })
+  resetCode: string;
 }
 export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);

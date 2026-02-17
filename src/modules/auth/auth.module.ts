@@ -8,6 +8,7 @@ import { UserModule } from '../user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../user/entities/user.entity';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
       signOptions: { expiresIn: '1d' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    NotificationModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, GoogleAuthGuard, GoogleStrategy],

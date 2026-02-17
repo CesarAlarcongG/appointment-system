@@ -2,6 +2,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { hash, compare } from 'bcryptjs';
@@ -12,6 +13,7 @@ import { Token } from './dto/token.dto';
 import { CredentialsDto } from './dto/credentials.dto';
 import { UserService } from '../user/user.service';
 import { GooglePayload } from '../user/types/google.payload';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +21,7 @@ export class AuthService {
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async encriptPassword(password: string): Promise<string> {
@@ -81,5 +84,16 @@ export class AuthService {
       console.log(error);
       throw new UnauthorizedException('Token inválido o expirado');
     }
+  }
+
+  async sendCode(email: string): Promise<void> {
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await this.userService.saveResetCode(user._id.toString(), resetCode);
+
+    await this.notificationService.sendResetCode(user.email, resetCode);
   }
 }
