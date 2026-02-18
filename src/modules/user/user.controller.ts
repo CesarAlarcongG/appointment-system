@@ -11,6 +11,7 @@ import { ERolUser } from './enums/rol.enum';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import type { ObjectId } from 'mongoose';
 import { ChangePassword } from './dto/change-password.dto';
+import { UserDocument } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -41,8 +42,11 @@ export class UserController {
     return this.userService.suspendUserAccount(idUser);
   }
 
+  @Public()
   @Patch('change-password')
-  changePassword(@Body() changePassword: ChangePassword) {
-    return this.userService.changePassword(changePassword);
+  async changePassword(
+    @Body() changePassword: ChangePassword,
+  ): Promise<UserDocument> {
+    return await this.userService.changePassword(changePassword);
   }
 }

@@ -87,16 +87,27 @@ export class UserService {
     code,
     newPassword,
     email,
-  }: ChangePassword): Promise<void> {
+  }: ChangePassword): Promise<UserDocument> {
     const user: UserDocument | null = await this.findUserByEmail(email);
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
     this.isValidCode(code, user.resetCode);
-    const newPasswordEncript = this.authService.encriptPassword(newPassword);
-    this.userModel.updateOne(
-      { _id: user._id },
-      { $set: { password: newPasswordEncript } },
-    );
+
+    const newPasswordEncript =
+      await this.authService.encriptPassword(newPassword);
+
+    const userUpdate: UserDocument | null =
+      await this.userModel.findByIdAndUpdate(
+        { _id: user._id },
+        { $set: { password: newPasswordEncript } },
+        { returnOriginal: true },
+      );
+
+    if (!userUpdate)
+      throw new NotFoundException(
+        'No se encontro a un ususario registrado con email' + email,
+      );
+    return userUpdate;
   }
 
   isValidCode(code: string, resetCode: string): void {
