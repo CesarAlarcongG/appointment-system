@@ -38,7 +38,8 @@ export class User {
   resetCode: string;
 
   @Prop({ required: false, type: Object })
-  patient: Pick<Patient, 'blodyType' | 'allergies'>; // Es muy bueno para embeber documento, como en este caso
+  // Pick<> Es muy bueno para embeber documento, como en este caso
+  patient: Pick<Patient, 'blodyType' | 'allergies'>;
 }
 export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);
