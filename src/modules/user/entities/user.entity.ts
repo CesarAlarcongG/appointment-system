@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ERolUser } from '../enums/rol.enum';
 import { HydratedDocument } from 'mongoose';
 import { EStateUser } from '../enums/state-account.enum';
+import { Patient } from 'src/modules/patient/entity/patient.entity';
 
 @Schema()
 export class User {
@@ -35,6 +36,9 @@ export class User {
 
   @Prop({ required: false })
   resetCode: string;
+
+  @Prop({ required: false, type: Object })
+  patient: Pick<Patient, 'blodyType' | 'allergies'>; // Es muy bueno para embeber documento, como en este caso
 }
 export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);

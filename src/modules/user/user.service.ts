@@ -17,6 +17,7 @@ import { UpdateDataDto } from './dto/update-data.dto';
 import { JwtPayload } from '../auth/interfaces/payload.jwt';
 import { EStateUser } from './enums/state-account.enum';
 import { ChangePassword } from './dto/change-password.dto';
+import { InfoPatientDto } from '../patient/dto/info-patient.dto';
 
 @Injectable()
 export class UserService {
@@ -87,7 +88,7 @@ export class UserService {
     code,
     newPassword,
     email,
-  }: ChangePassword): Promise<UserDocument> {
+  }: ChangePassword): Promise<void> {
     const user: UserDocument | null = await this.findUserByEmail(email);
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
@@ -107,12 +108,35 @@ export class UserService {
       throw new NotFoundException(
         'No se encontro a un ususario registrado con email' + email,
       );
-    return userUpdate;
   }
 
   isValidCode(code: string, resetCode: string): void {
     if (code !== resetCode) {
       throw new UnauthorizedException('El código es incorrecto');
     }
+  }
+
+  async findUserById(userId: ObjectId): Promise<UserDocument> {
+    const user: UserDocument | null = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException();
+    return user;
+  }
+
+  async addInfoPatient(infoPatient: InfoPatientDto): Promise<void> {
+    const user: UserDocument | null = await this.userModel.findOneAndUpdate(
+      { _id: infoPatient.userId },
+      {
+        $set: {
+          state: EStateUser.ACTIVE,
+          patient: {
+            bloodyType: infoPatient.blodyType,
+            allergies: infoPatient.allergies,
+          },
+        },
+      },
+    );
+
+    if (!user)
+      throw new NotFoundException('No se pudo agregar información de paciente');
   }
 }
