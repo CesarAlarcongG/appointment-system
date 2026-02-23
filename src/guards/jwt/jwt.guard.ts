@@ -31,7 +31,7 @@ export class JwtGuard implements CanActivate {
     const token: string | undefined = this.extractTokenFromHeader(request);
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('No tiene token');
     }
 
     try {
@@ -39,7 +39,9 @@ export class JwtGuard implements CanActivate {
 
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'Ocurrio un erroe mientras se almacena el payload en el request',
+      );
     }
     return true;
   }
