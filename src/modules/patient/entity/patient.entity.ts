@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { EBlodyType } from '../enums/blody-type.enum';
 import type { Insurance } from '../types/insurance.type';
 import { HydratedDocument, Types } from 'mongoose';
+import { User } from 'src/modules/user/entities/user.entity';
 
 @Schema()
 export class Patient {
@@ -20,6 +21,9 @@ export class Patient {
 
   @Prop({ type: Object })
   insurance: Insurance;
+
+  @Prop({ type: Object })
+  userInformation: Pick<User, 'firtsName' | 'lastName'>;
 }
 export type PatientDocument = HydratedDocument<Patient>;
 export const PatientSchema = SchemaFactory.createForClass(Patient);
