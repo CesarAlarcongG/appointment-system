@@ -17,7 +17,6 @@ import { UpdateDataDto } from './dto/update-data.dto';
 import { JwtPayload } from '../auth/interfaces/payload.jwt';
 import { EStateUser } from './enums/state-account.enum';
 import { ChangePassword } from './dto/change-password.dto';
-import { InfoPatientDto } from '../patient/dto/info-patient.dto';
 
 @Injectable()
 export class UserService {
@@ -120,23 +119,5 @@ export class UserService {
     const user: UserDocument | null = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException();
     return user;
-  }
-
-  async addInfoPatient(infoPatient: InfoPatientDto): Promise<void> {
-    const user: UserDocument | null = await this.userModel.findOneAndUpdate(
-      { _id: infoPatient.userId },
-      {
-        $set: {
-          state: EStateUser.ACTIVE,
-          patient: {
-            bloodyType: infoPatient.blodyType,
-            allergies: infoPatient.allergies,
-          },
-        },
-      },
-    );
-
-    if (!user)
-      throw new NotFoundException('No se pudo agregar información de paciente');
   }
 }

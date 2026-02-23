@@ -3,7 +3,7 @@ import { ERolUser } from 'src/modules/user/enums/rol.enum';
 
 export class CreateUserDto {
   @IsString()
-  firstName: string;
+  firtsName: string;
 
   @IsString()
   lastName: string;

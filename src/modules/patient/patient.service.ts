@@ -4,12 +4,12 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { InfoPatientDto } from './dto/info-patient.dto';
 import { UserService } from '../user/user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Patient } from './entity/patient.entity';
-import { Model, ObjectId, Types } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { InfoPatientDto } from './dto/info-patient.dto';
 
 @Injectable()
 export class PatientService {
@@ -18,9 +18,12 @@ export class PatientService {
     private readonly userService: UserService,
   ) {}
 
-  async createPatient(infoPatient: InfoPatientDto): Promise<void> {
+  async createPatient(
+    userId: ObjectId,
+    infoPatient: InfoPatientDto,
+  ): Promise<void> {
     const isPatientCreate = await this.patientModel.findOne({
-      userId: infoPatient.userId,
+      userId: userId,
     });
 
     if (isPatientCreate)
@@ -28,10 +31,15 @@ export class PatientService {
         'La información de paciente ya fue registrado para este ususario',
       );
 
-    await this.userService.addInfoPatient(infoPatient);
+    const user = await this.userService.findUserById(userId);
+
     const patient: Patient | null = await this.patientModel.create({
       ...infoPatient,
-      userId: new Types.ObjectId(infoPatient.userId),
+      userId: user._id,
+      userInformation: {
+        firtsName: user.firtsName,
+        lastName: user.lastName,
+      },
     });
 
     if (!patient)

@@ -12,9 +12,12 @@ export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
   @RequiresRole(ERolUser.MEDIC, ERolUser.ADMIN, ERolUser.WORKER)
-  @Post('create')
-  createPatient(@Body() infoPatientDto: InfoPatientDto): Promise<void> {
-    return this.patientService.createPatient(infoPatientDto);
+  @Post('create/:userId')
+  createPatient(
+    @Body() infoPatientDto: InfoPatientDto,
+    @Param('userId', ParseObjectIdPipe) userId: ObjectId,
+  ): Promise<void> {
+    return this.patientService.createPatient(userId, infoPatientDto);
   }
 
   @RequiresRole(ERolUser.MEDIC, ERolUser.ADMIN, ERolUser.WORKER)
