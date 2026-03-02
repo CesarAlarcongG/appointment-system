@@ -30,7 +30,7 @@ export class AuthService {
 
   generateToken({ _id, email, rol }: UserDocument): Token {
     const payload: JwtPayload = {
-      _id: _id.toString(),
+      _id: _id,
       email,
       rol,
     };

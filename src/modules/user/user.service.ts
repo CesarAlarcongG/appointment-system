@@ -1,5 +1,5 @@
 import { User, UserDocument } from './entities/user.entity';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { AuthService } from '../auth/auth.service';
 import {
@@ -17,6 +17,7 @@ import { UpdateDataDto } from './dto/update-data.dto';
 import { JwtPayload } from '../auth/interfaces/payload.jwt';
 import { EStateUser } from './enums/state-account.enum';
 import { ChangePassword } from './dto/change-password.dto';
+import { PatientService } from '../patient/patient.service';
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,8 @@ export class UserService {
     private readonly authService: AuthService,
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly factoryRegister: RegisterFactory,
+    @Inject(forwardRef(() => PatientService))
+    private readonly patientService: PatientService,
   ) {}
 
   async registerUser<T>(information: T, provider: string): Promise<Token> {
@@ -60,6 +63,13 @@ export class UserService {
       .exec();
 
     if (!userUpdate) throw new NotFoundException('No se necontro al ususario');
+
+    await this.patientService.updatePatient(jwt._id, {
+      userInformation: {
+        firtsName: userUpdate.firtsName,
+        lastName: userUpdate.lastName,
+      },
+    });
     return userUpdate;
   }
 
@@ -115,7 +125,7 @@ export class UserService {
     }
   }
 
-  async findUserById(userId: ObjectId): Promise<UserDocument> {
+  async findUserById(userId: Types.ObjectId): Promise<UserDocument> {
     const user: UserDocument | null = await this.userModel.findById(userId);
     if (!user) throw new NotFoundException();
     return user;

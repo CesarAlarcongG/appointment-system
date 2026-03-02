@@ -5,7 +5,7 @@ import { RequiresRole } from 'src/decorators/requiere-rol/require-rol.decorator'
 import { ERolUser } from '../user/enums/rol.enum';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
-import type { ObjectId } from 'mongoose';
+import type { Types } from 'mongoose';
 
 @Controller('patient')
 export class PatientController {
@@ -15,7 +15,7 @@ export class PatientController {
   @Post('create/:userId')
   createPatient(
     @Body() infoPatientDto: InfoPatientDto,
-    @Param('userId', ParseObjectIdPipe) userId: ObjectId,
+    @Param('userId', ParseObjectIdPipe) userId: Types.ObjectId,
   ): Promise<void> {
     return this.patientService.createPatient(userId, infoPatientDto);
   }
@@ -24,7 +24,7 @@ export class PatientController {
   @Patch('update/:userId')
   update(
     @Body() updatePatientDto: UpdatePatientDto,
-    @Param('userId', ParseObjectIdPipe) userId: ObjectId,
+    @Param('userId', ParseObjectIdPipe) userId: Types.ObjectId,
   ) {
     return this.patientService.updatePatient(userId, updatePatientDto);
   }

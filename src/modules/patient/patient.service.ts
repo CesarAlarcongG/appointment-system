@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  forwardRef,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -7,19 +9,21 @@ import {
 import { UserService } from '../user/user.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Patient } from './entity/patient.entity';
-import { Model, ObjectId } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { InfoPatientDto } from './dto/info-patient.dto';
 
 @Injectable()
 export class PatientService {
   constructor(
-    @InjectModel(Patient.name) private patientModel: Model<Patient>,
+    @InjectModel(Patient.name)
+    private patientModel: Model<Patient>,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
   async createPatient(
-    userId: ObjectId,
+    userId: Types.ObjectId,
     infoPatient: InfoPatientDto,
   ): Promise<void> {
     const isPatientCreate = await this.patientModel.findOne({
@@ -49,7 +53,7 @@ export class PatientService {
   }
 
   async updatePatient(
-    userId: ObjectId,
+    userId: Types.ObjectId,
     updatePatientDto: UpdatePatientDto,
   ): Promise<void> {
     const patientUpdate = await this.patientModel.findOneAndUpdate(

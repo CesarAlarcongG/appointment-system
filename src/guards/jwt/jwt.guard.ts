@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 import { IS_PUBLIC_KEY } from 'src/decorators/public.decorator';
 import { JwtPayload } from 'src/modules/auth/interfaces/payload.jwt';
 
@@ -36,6 +37,7 @@ export class JwtGuard implements CanActivate {
 
     try {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
+      payload._id = new Types.ObjectId(payload._id);
 
       request['user'] = payload;
     } catch {

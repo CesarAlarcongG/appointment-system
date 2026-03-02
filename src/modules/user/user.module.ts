@@ -7,11 +7,13 @@ import { AuthModule } from '../auth/auth.module';
 import { TraditionalRegisterStrategy } from './strategies/traditional-register.strategy';
 import { GoogleRegisterStrategy } from './strategies/google-register.strategy';
 import { RegisterFactory } from './factories/register.factory';
+import { PatientModule } from '../patient/patient.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     forwardRef(() => AuthModule),
+    forwardRef(() => PatientModule),
   ],
   controllers: [UserController],
   providers: [
