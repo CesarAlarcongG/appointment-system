@@ -66,4 +66,10 @@ export class PatientService {
     if (!patientUpdate)
       throw new NotFoundException('No se encontró al patient');
   }
+
+  async findPatientByUserId(patientId: Types.ObjectId): Promise<Patient> {
+    const patient: Patient | null = await this.patientModel.findById(patientId);
+    if (!patient) throw new NotFoundException('No se encontro al paciente');
+    return patient;
+  }
 }
