@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ _id: false })
 export class Schedule {
@@ -11,3 +11,5 @@ export class Schedule {
   @Prop({ required: true })
   endTime: string;
 }
+
+export const ScheduleSchema = SchemaFactory.createForClass(Schedule);

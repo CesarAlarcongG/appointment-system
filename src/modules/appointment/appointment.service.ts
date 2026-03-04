@@ -1,26 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Appointment } from './entities/appointment.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AppointmentService {
+  constructor(
+    @InjectModel(Appointment.name)
+    private readonly appointmentModel: Model<Appointment>,
+  ) {}
+
   create(createAppointmentDto: CreateAppointmentDto) {
-    return 'This action adds a new appointment';
-  }
-
-  findAll() {
-    return `This action returns all appointment`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} appointment`;
-  }
-
-  update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
-    return `This action updates a #${id} appointment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} appointment`;
+    return this.appointmentModel.create({ ...createAppointmentDto });
   }
 }

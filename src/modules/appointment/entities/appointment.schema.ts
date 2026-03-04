@@ -1,13 +1,14 @@
-import { Prop, Schema } from '@nestjs/mongoose';
-import type { Schedule } from './schedule.schema';
-import { Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Schedule, ScheduleSchema } from './schedule.schema';
+import { HydratedDocument, Types } from 'mongoose';
 import { EStatusAppointment } from '../enums/appintiment-status.enum';
 import { EPriority } from '../enums/priority.enum';
 
 @Schema()
 export class Appointment {
-  @Prop({ type: Object })
+  @Prop({ type: ScheduleSchema })
   schedule: Schedule;
+
   @Prop({ type: String, enum: EStatusAppointment, required: true })
   status: EStatusAppointment;
 
@@ -20,3 +21,6 @@ export class Appointment {
   @Prop({ type: Types.ObjectId, ref: 'Medic', required: false })
   medicId?: Types.ObjectId;
 }
+
+export type AppointmentDocument = HydratedDocument<Appointment>;
+export const AppointmentSchema = SchemaFactory.createForClass(Appointment);

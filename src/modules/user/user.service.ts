@@ -24,10 +24,14 @@ export class UserService {
   constructor(
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-    @InjectModel(User.name) private userModel: Model<User>,
-    private readonly factoryRegister: RegisterFactory,
+
     @Inject(forwardRef(() => PatientService))
     private readonly patientService: PatientService,
+
+    @InjectModel(User.name)
+    private userModel: Model<User>,
+
+    private readonly factoryRegister: RegisterFactory,
   ) {}
 
   async registerUser<T>(information: T, provider: string): Promise<Token> {
